@@ -19,9 +19,7 @@ class ProductInputController extends Controller
     public function store(ProductInputRequest $request)
     {
         $input = ProductInput::create($request->all());
-        $product = $input->product;
-        $product->stock += $input->amount;
-        $product->save();
+
         return new ProductInputResource($input);
     }
 
