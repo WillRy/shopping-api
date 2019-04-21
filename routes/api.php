@@ -24,6 +24,7 @@ Route::group(['namespace'=>'Api','as'=>'api.'],function(){
     Route::resource('products.categories','ProductCategoryController',['only'=>['index','store','destroy']]);
 
     Route::resource('inputs','ProductInputController',['only'=>['index','store','show']]);
+    Route::resource('outputs','ProductOutputController',['only'=>['index','store','show']]);
 });
 
 
