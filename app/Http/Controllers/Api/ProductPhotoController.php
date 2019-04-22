@@ -7,6 +7,7 @@ use CodeShopping\Models\Product;
 use CodeShopping\Models\ProductPhoto;
 use CodeShopping\Http\Controllers\Controller;
 use CodeShopping\Http\Resources\ProductPhotoResource;
+use CodeShopping\Http\Resources\ProductPhotoCollection;
 
 class ProductPhotoController extends Controller
 {
@@ -17,7 +18,7 @@ class ProductPhotoController extends Controller
      */
     public function index(Product $product)
     {
-        return ProductPhotoResource::collection($product->photos);
+        return new ProductPhotoCollection($product->photos, $product);
     }
 
     /**
@@ -42,7 +43,7 @@ class ProductPhotoController extends Controller
         if($product->id != $photo->product_id){
             abort(404);
         }
-        return $photo;
+        return new ProductPhotoResource($photo);
     }
 
 
