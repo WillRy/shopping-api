@@ -29,9 +29,19 @@ class ProductPhoto extends Model
         }
     }
 
+    public function getPhotoUrlAttribute()
+    {
+        $path = self::photosDir($this->product_id);
+        return asset("storage/{$path}/{$this->file_name}");
+    }
     public static function photosDir($productId)
     {
         $dir = self::DIR_PRODUCTS;
         return "{$dir}/{$productId}";
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
     }
 }
