@@ -24,7 +24,7 @@ class ProductPhotoResource extends JsonResource
             'updated_at'=>$this->updated_at
         ];
         if(!$this->isCollection){
-            $data['product'] = new ProductResource($this->resource);
+            $data['product'] = new ProductResource($this->product);
         }
         return $data;
     }

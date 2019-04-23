@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use CodeShopping\Models\Product;
 use CodeShopping\Models\ProductPhoto;
 use CodeShopping\Http\Controllers\Controller;
+use CodeShopping\Http\Requests\ProductPhotoRequest;
 use CodeShopping\Http\Resources\ProductPhotoResource;
 use CodeShopping\Http\Resources\ProductPhotoCollection;
 
@@ -27,9 +28,10 @@ class ProductPhotoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProductPhotoRequest $request, Product $product)
     {
-        //
+        $photos = ProductPhoto::createWithPhotosFiles($product->id, $request->photos);
+        return new ProductPhotoCollection($photos,$product);
     }
 
     /**
