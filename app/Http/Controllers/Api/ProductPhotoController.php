@@ -31,7 +31,7 @@ class ProductPhotoController extends Controller
     public function store(ProductPhotoRequest $request, Product $product)
     {
         $photos = ProductPhoto::createWithPhotosFiles($product->id, $request->photos);
-        return new ProductPhotoCollection($photos,$product);
+        return response()->json(new ProductPhotoCollection($photos, $product), 201);
     }
 
     /**
@@ -40,9 +40,9 @@ class ProductPhotoController extends Controller
      * @param  \CodeShopping\Models\ProductPhoto  $productPhoto
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product,ProductPhoto $photo)
+    public function show(Product $product, ProductPhoto $photo)
     {
-        if($product->id != $photo->product_id){
+        if ($product->id != $photo->product_id) {
             abort(404);
         }
         return new ProductPhotoResource($photo);
