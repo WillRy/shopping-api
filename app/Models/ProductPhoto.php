@@ -5,6 +5,7 @@ namespace CodeShopping\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\UploadedFile;
 
 class ProductPhoto extends Model
 {
@@ -29,12 +30,12 @@ class ProductPhoto extends Model
             self::uploadFiles($productId, $files);
             \DB::beginTransaction();
             $photos = self::createPhotosModels($productId, $files);
-
             \DB::commit();
             return new Collection($photos);
         } catch (\Exception $e) {
-            self::deleteFiles($productId,$files);
+            self::deleteFiles($productId, $files);
             \DB::rollBack();
+            throw $e;
         }
     }
 
@@ -43,11 +44,43 @@ class ProductPhoto extends Model
         foreach ($files as $file) {
             $path = self::photosPath($productId);
             $photoPath = "{$path}/{$file->hashName()}";
-            if(file_exists($photoPath)){
+            if (file_exists($photoPath)) {
                 \File::delete($photoPath);
             }
-
         }
+    }
+
+    public function updatePhoto($file)
+    {
+        try {
+            self::uploadFiles($this->product_id, [$file]);
+
+            \DB::beginTransaction();
+
+            self::deleteFiles($this->product_id, [$file]);
+
+            $this->file_name = $file->hashName();
+
+            $this->save();
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            self::deleteFiles($this->product_id, [$file]);
+
+            \DB::rollBack();
+
+            throw $e;
+        }
+    }
+
+    public function deletePhoto()
+    {
+        $path = self::photosPath($this->product_id);
+        $photoPath = "{$path}/{$this->file_name}";
+        if (file_exists($photoPath)) {
+            \File::delete($photoPath);
+        }
+        $this->delete();
     }
     public static function uploadFiles(int $productId, array $files)
     {

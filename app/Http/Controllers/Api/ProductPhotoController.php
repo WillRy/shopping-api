@@ -42,33 +42,30 @@ class ProductPhotoController extends Controller
      */
     public function show(Product $product, ProductPhoto $photo)
     {
-        if ($product->id != $photo->product_id) {
-            abort(404);
-        }
+        $this->assertProductPhoto($product, $photo);
         return new ProductPhotoResource($photo);
     }
 
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \CodeShopping\Models\ProductPhoto  $productPhoto
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, ProductPhoto $productPhoto)
+    public function update(ProductPhotoRequest $request, Product $product, ProductPhoto $photo)
     {
-        //
+        $this->assertProductPhoto($product, $photo);
+        $photos = $request->photos;
+        // visando usar o metodo ja existe para deletar arquivos, enviei somente um arquivo, filtrando com array_shift
+        $photo->updatePhoto(array_shift($photos));
+        return new ProductPhotoResource($photo);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \CodeShopping\Models\ProductPhoto  $productPhoto
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(ProductPhoto $productPhoto)
+    public function destroy(Product $product, ProductPhoto $photo)
     {
-        //
+        $photo->deletePhoto();
+        return response()->json([], 204);
+    }
+
+    public function assertProductPhoto(Product $product, ProductPhoto $photo)
+    {
+        if ($product->id != $photo->product_id) {
+            abort(404);
+        }
     }
 }
