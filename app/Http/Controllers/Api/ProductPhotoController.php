@@ -49,9 +49,13 @@ class ProductPhotoController extends Controller
 
     public function update(ProductPhotoRequest $request, Product $product, ProductPhoto $photo)
     {
+
         $this->assertProductPhoto($product, $photo);
+        if(sizeof($request->photos) > 1){
+            return response()->json(['message'=>'Para substituição de imagem, inclua somente uma imagem'],422);
+        }
         $photos = $request->photos;
-        // visando usar o metodo ja existe para deletar arquivos, enviei somente um arquivo, filtrando com array_shift
+        // visando usar o metodo ja existe para deletar arquivos, enviei somente o arquivo,com o array_shift
         $photo->updatePhoto(array_shift($photos));
         return new ProductPhotoResource($photo);
     }
