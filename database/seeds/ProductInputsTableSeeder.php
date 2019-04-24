@@ -14,7 +14,7 @@ class ProductInputsTableSeeder extends Seeder
     public function run()
     {
         $products = Product::all();
-        factory(ProductInput::class, 150)
+        factory(ProductInput::class, 200)
             ->make()
             ->each(function ($input) use ($products) {
                 $product = $products->random();
