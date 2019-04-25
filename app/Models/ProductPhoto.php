@@ -57,7 +57,7 @@ class ProductPhoto extends Model
 
             \DB::beginTransaction();
 
-            self::deleteFiles($this->product_id, [$file]);
+            $this->deleteFile($this->product_id,$this->file_name);
 
             $this->file_name = $file->hashName();
 
@@ -73,6 +73,15 @@ class ProductPhoto extends Model
         }
     }
 
+    public function deleteFile(int $productId, $fileName)
+    {
+        $path = self::photosPath($productId);
+        $photoPath = "{$path}/{$fileName}";
+        if (file_exists($photoPath)) {
+            \File::delete($photoPath);
+        }
+
+    }
     public function deletePhoto()
     {
         $path = self::photosPath($this->product_id);

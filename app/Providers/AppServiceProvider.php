@@ -27,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
             $product = $input->product;
             $product->stock -= $input->amount;
             if($product->stock < 0){
-                throw new Exception("Estoque de {$product->name} não pode ser negativo");
+                throw new \Exception("Estoque de {$product->name} não pode ser negativo");
             }
             $product->save();
         });
