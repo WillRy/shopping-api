@@ -39,6 +39,42 @@ class ProductPhoto extends Model
         }
     }
 
+    public function updateWithPhotosFiles(UploadedFile $file): ProductPhoto
+    {
+        try {
+            self::uploadFiles($this->product_id, [$file]);
+            \DB::beginTransaction();
+            $this->deletePhoto($this->file_name);
+            $this->file_name = $file->hashName();
+            $this->save();
+            \DB::commit();
+            return $this;
+        } catch (\Exception $e) {
+            self::deleteFiles($this->product_id, [$file]);
+            \DB::rollBack();
+            throw $e;
+        }
+    }
+
+    private function deletePhoto($fileName)
+    {
+        $dir = self::photosDir($this->product_id);
+        \Storage::disk('public')->delete("{$dir}/{$fileName}");
+    }
+
+    public function deleteWithPhoto()
+    {
+        try {
+            \DB::beginTransaction();
+            $this->deletePhoto($this->file_name);
+            $result = $this->delete();
+            \DB::commit();
+            return $result;
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            throw $e;
+        }
+    }
     private static function deleteFiles(int $productId, array $files)
     {
         foreach ($files as $file) {
@@ -50,47 +86,6 @@ class ProductPhoto extends Model
         }
     }
 
-    public function updatePhoto($file)
-    {
-        try {
-            self::uploadFiles($this->product_id, [$file]);
-
-            \DB::beginTransaction();
-
-            $this->deleteFile($this->product_id,$this->file_name);
-
-            $this->file_name = $file->hashName();
-
-            $this->save();
-
-            \DB::commit();
-        } catch (\Exception $e) {
-            self::deleteFiles($this->product_id, [$file]);
-
-            \DB::rollBack();
-
-            throw $e;
-        }
-    }
-
-    public function deleteFile(int $productId, $fileName)
-    {
-        $path = self::photosPath($productId);
-        $photoPath = "{$path}/{$fileName}";
-        if (file_exists($photoPath)) {
-            \File::delete($photoPath);
-        }
-
-    }
-    public function deletePhoto()
-    {
-        $path = self::photosPath($this->product_id);
-        $photoPath = "{$path}/{$this->file_name}";
-        if (file_exists($photoPath)) {
-            \File::delete($photoPath);
-        }
-        $this->delete();
-    }
     public static function uploadFiles(int $productId, array $files)
     {
         $dir = self::photosDir($productId);

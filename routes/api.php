@@ -26,10 +26,9 @@ Route::group(['namespace'=>'Api','as'=>'api.'],function(){
     Route::resource('inputs','ProductInputController',['only'=>['index','store','show']]);
     Route::resource('outputs','ProductOutputController',['only'=>['index','store','show']]);
 
-    Route::resource('products.photos','ProductPhotoController',['except'=>['create','edit','update']]);
+    Route::resource('products.photos','ProductPhotoController',['except'=>['create','edit']]);
 
-    // criado rota personalizada fora do resource, pois o PHP não suporta envio de arquivos com método PUT, use o POST.
-    Route::post('products/{product}/photos/{photo}','ProductPhotoController@update');
+
 });
 
 
