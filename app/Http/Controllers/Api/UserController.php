@@ -4,10 +4,12 @@ namespace CodeShopping\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use CodeShopping\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Builder;
+use CodeShopping\Http\Requests\UserRequest;
+use Illuminate\Database\Eloquent\Collection;
 use CodeShopping\Http\Controllers\Controller;
 use CodeShopping\Http\Resources\UserResource;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 
 class UserController extends Controller
 {
@@ -19,19 +21,9 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $query = User::query();
-        $query = $this->onlyTrashedIfRequest($request,$query);
+        $query = $this->onlyTrashedIfRequest($request, $query);
         $users = $query->paginate(10);
         return UserResource::Collection($users);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -40,9 +32,14 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        //
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+        return new UserResource($user);
     }
 
     /**
@@ -52,17 +49,6 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
     {
         //
     }
@@ -92,7 +78,7 @@ class UserController extends Controller
 
     private function onlyTrashedIfRequest(Request $request, Builder $query)
     {
-        if($request->get('trashed') == 1){
+        if ($request->get('trashed') == 1) {
             $query = $query->onlyTrashed();
         }
         return $query;
