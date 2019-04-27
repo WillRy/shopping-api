@@ -38,7 +38,11 @@ class UserController extends Controller
 
     public function update(UserRequest $request, User $user)
     {
-        $user->fill($request->all());
+        $data = $request->all();
+        if(!empty($data['password'])){
+            $data['password'] =  Hash::make($request->password);
+        }
+        $user->fill($data);
         $user->save();
         return new UserResource($user);
     }
