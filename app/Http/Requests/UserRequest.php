@@ -40,7 +40,7 @@ class UserRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => "string|email|max:255|unique:users,email," . \Request::route('user')->id,
-            'password' => 'string|min:6|confirmed',
+            'password' => 'string|min:4|max:16|confirmed',
         ];
     }
 }
