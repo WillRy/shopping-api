@@ -28,7 +28,7 @@ Route::group(['namespace'=>'Api','as'=>'api.'],function(){
 
     Route::resource('products.photos','ProductPhotoController',['except'=>['create','edit']]);
 
-
+    Route::resource('users','UserController',['except'=>['create','edit']]);
 });
 
 

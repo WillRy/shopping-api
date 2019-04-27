@@ -3,6 +3,7 @@
 namespace CodeShopping\Providers;
 
 use Illuminate\Http\Request;
+use CodeShopping\Models\User;
 use CodeShopping\Models\Product;
 use CodeShopping\Models\Category;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +38,11 @@ class RouteServiceProvider extends ServiceProvider
             $query = Product::query();
             $query = $this->onlyTrashedIfRequest($query);
             return $query->whereId($value)->orWhere('slug',$value)->firstOrFail();
+        });
+        Route::bind('user', function ($value) {
+            $query = User::query();
+            $query = $this->onlyTrashedIfRequest($query);
+            return $query->whereId($value)->firstOrFail();
         });
     }
 
