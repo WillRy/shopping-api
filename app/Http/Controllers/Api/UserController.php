@@ -36,15 +36,18 @@ class UserController extends Controller
         return new UserResource($user);
     }
 
-    public function update(Request $request, $id)
+    public function update(UserRequest $request, User $user)
     {
-
+        $user->fill($request->all());
+        $user->save();
+        return new UserResource($user);
     }
 
 
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        //
+        $user->delete();
+        return response()->json([],204);
     }
 
     private function onlyTrashedIfRequest(Request $request, Builder $query)
