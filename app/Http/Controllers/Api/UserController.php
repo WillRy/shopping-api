@@ -5,12 +5,10 @@ namespace CodeShopping\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use CodeShopping\Models\User;
 use CodeShopping\Common\OnlyTrashed;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Database\Eloquent\Builder;
 use CodeShopping\Http\Requests\UserRequest;
 use CodeShopping\Http\Controllers\Controller;
 use CodeShopping\Http\Resources\UserResource;
-
+use CodeShopping\Events\UserCreatedEvent;
 
 class UserController extends Controller
 {
@@ -28,6 +26,7 @@ class UserController extends Controller
     public function store(UserRequest $request)
     {
         $user = User::create($request->all());
+        event(new UserCreatedEvent($user));
         return new UserResource($user);
     }
 
