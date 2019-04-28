@@ -6,8 +6,9 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Hash;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use Notifiable,SoftDeletes;
 
@@ -35,5 +36,18 @@ class User extends Authenticatable
     {
         !isset($attributes['password']) ? : $attributes['password'] = Hash::make($attributes['password']);
         return parent::fill($attributes);
+    }
+
+    public function getJWTIdentifier()
+    {
+        return $this->id;
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [
+            'email'=>$this->email,
+            'name'=>$this->name
+        ];
     }
 }
