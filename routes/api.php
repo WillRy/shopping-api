@@ -19,7 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::group(['namespace'=>'Api','as'=>'api.'],function(){
     Route::name('login')->post('login',"AuthController@login");
-
+    Route::name('refresh')->post('refresh','AuthController@refresh');
 
 
     Route::group(['middleware'=>'auth:api'],function(){
