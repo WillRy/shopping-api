@@ -11,9 +11,10 @@ use CodeShopping\Http\Resources\CategoryResource;
 class CategoryController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        return CategoryResource::collection(Category::all());
+        $categories = $request->has('all') ? Category::all() : Category::paginate(5);
+        return CategoryResource::collection($categories);
     }
 
     public function store(CategoryRequest $request)
