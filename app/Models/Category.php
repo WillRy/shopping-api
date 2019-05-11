@@ -4,10 +4,11 @@ namespace CodeShopping\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Mnabialek\LaravelEloquentFilter\Traits\Filterable;
 
 class Category extends Model
 {
-    use Sluggable;
+    use Sluggable, Filterable;
 
     protected $fillable = [
         'name',
