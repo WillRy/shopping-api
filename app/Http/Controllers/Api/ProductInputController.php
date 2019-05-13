@@ -2,17 +2,23 @@
 
 namespace CodeShopping\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\DB;
 use CodeShopping\Models\ProductInput;
 use CodeShopping\Http\Controllers\Controller;
-use CodeShopping\Http\Resources\ProductInputResource;
+use CodeShopping\Http\Filters\ProductInputFilter;
 use CodeShopping\Http\Requests\ProductInputRequest;
+use CodeShopping\Http\Resources\ProductInputResource;
 
 class ProductInputController extends Controller
 {
 
     public function index()
     {
-        $inputs = ProductInput::with('product')->paginate();  //eager loading
+        // DB::enableQueryLog();
+        $filter = app(ProductInputFilter::class);
+        $filterQuery = ProductInput::with('product')->filtered($filter);
+        $inputs = $filterQuery->paginate();  //eager loading
+         // dd(DB::getQueryLog());
         return ProductInputResource::collection($inputs);
     }
 
