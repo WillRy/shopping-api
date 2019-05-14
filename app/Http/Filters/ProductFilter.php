@@ -19,7 +19,7 @@ class ProductFilter extends SimpleQueryFilter
     public function hasFilterParameter()
     {
         $contais = $this->parser->getFilters()->contains(function($filter) {
-            return $filter->getField() === 'search' && !empty($this->getValue());
+            return $filter->getField() === 'search' && !empty($filter->getValue());
         });
         return $contais;
     }
