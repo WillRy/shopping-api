@@ -12,6 +12,9 @@ class User extends Authenticatable implements JWTSubject
 {
     use Notifiable,SoftDeletes;
 
+    const ROLE_SELLER = 1;
+    const ROLE_CUSTOMER = 2;
+
     protected $dates = ['deleted_at'];
     /**
      * The attributes that are mass assignable.
