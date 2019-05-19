@@ -19,7 +19,7 @@ class ProductPhotoResource extends JsonResource
     {
         $data =  [
             'id'=>$this->id,
-            'photo'=> $this->photo_url, //accessors and mutator
+            'photo_url'=> $this->photo_url, //accessors and mutator
             'created_at'=>$this->created_at,
             'updated_at'=>$this->updated_at
         ];
