@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace CodeShopping\Firebase;
 
+use Kreait\Firebase;
 use Kreait\Firebase\Auth\UserRecord;
 
 class Auth
