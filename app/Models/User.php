@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare (strict_types = 1);
 namespace CodeShopping\Models;
 
 use Illuminate\Support\Facades\DB;
@@ -12,7 +12,7 @@ use PHPUnit\Framework\Constraint\Exception;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use Notifiable,SoftDeletes;
+    use Notifiable, SoftDeletes;
 
     const ROLE_SELLER = 1;
     const ROLE_CUSTOMER = 2;
@@ -61,9 +61,27 @@ class User extends Authenticatable implements JWTSubject
         return $user;
     }
 
+    public function updateWithProfile(array $data): User
+    {
+        try {
+            if (isset($data['photo'])){
+                UserProfile::uploadPhoto($data['photo']);
+            }
+            DB::beginTransaction();
+            $this->fill($data);
+            $this->save();
+            UserProfile::saveProfile($this, $data);
+            DB::commit();
+            return $this;
+        } catch (\Exception $e) {
+            UserProfile::deleteFile($data['photo']);
+            DB::rollBack();
+            throw $e;
+        }
+    }
     public function fill($attributes = [])
     {
-        !isset($attributes['password']) ? : $attributes['password'] = Hash::make($attributes['password']);
+        !isset($attributes['password']) ?: $attributes['password'] = Hash::make($attributes['password']);
         return parent::fill($attributes);
     }
 
@@ -75,8 +93,8 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [
-            'email'=>$this->email,
-            'name'=>$this->name
+            'email' => $this->email,
+            'name' => $this->name
         ];
     }
 
@@ -84,5 +102,4 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(UserProfile::class)->withDefault();
     }
-
 }

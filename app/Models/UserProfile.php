@@ -13,7 +13,7 @@ class UserProfile extends Model
     const DIR_USERS = 'users';
     const DIR_USER_PHOTO = self::DIR_USERS . '/photos';
 
-    const USER_PHOTO_PATH = self::BASE_PATH.'/'.self::DIR_USER_PHOTO;
+    const USER_PHOTO_PATH = self::BASE_PATH . '/' . self::DIR_USER_PHOTO;
 
     protected $fillable = [
         'photo',
@@ -34,7 +34,7 @@ class UserProfile extends Model
 
     public static function uploadPhoto(UploadedFile $photo = null)
     {
-        if(!$photo){
+        if (!$photo) {
             return;
         }
         $dir = self::photoDir();
@@ -43,7 +43,10 @@ class UserProfile extends Model
 
     public static function saveProfile(User $user, array $data): UserProfile
     {
-        $data['photo'] = UserProfile::getPhotoHashName($data['photo']);
+        if (array_key_exists('photo', $data)){
+            self::deletePhoto($user->profile);
+            $data['photo'] = UserProfile::getPhotoHashName($data['photo']);
+        }
         $user->profile->fill($data)->save();
         return $user->profile;
     }
@@ -53,14 +56,23 @@ class UserProfile extends Model
         return $photo ? $photo->hashName() : null;
     }
 
+    public static function deletePhoto(UserProfile $profile)
+    {
+        if (!$profile->photo) {
+            return;
+        }
+
+        $dir = self::photoDir();
+        \Storage::disk('public')->delete("{$dir}/{$profile->photo}");
+    }
     public static function deleteFile(UploadedFile $photo = null)
     {
-        if(!$photo){
+        if (!$photo) {
             return;
         }
         $path = self::photoPath();
         $photoPath = "{$path}/{$photo->hashName()}";
-        if(file_exists($photoPath)){
+        if (file_exists($photoPath)) {
             \File::delete($photoPath);
         }
     }

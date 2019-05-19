@@ -17,31 +17,33 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group(['namespace'=>'Api','as'=>'api.'],function(){
-    Route::name('login')->post('login',"AuthController@login");
-    Route::name('login_vendor')->post('login_vendor',"AuthController@loginFirebase");
-    Route::name('refresh')->post('refresh','AuthController@refresh');
+Route::group(['namespace' => 'Api', 'as' => 'api.'], function () {
+    Route::name('login')->post('login', "AuthController@login");
+    Route::name('login_vendor')->post('login_vendor', "AuthController@loginFirebase");
+    Route::name('refresh')->post('refresh', 'AuthController@refresh');
 
-    Route::resource('customers',"CustomerController", ['only'=>['store']]);
+    Route::resource('customers', "CustomerController", ['only' => ['store']]);
 
-    Route::group(['middleware'=>['auth:api','jwt.refresh','can:is_seller']],function(){
-        Route::name('logout')->post('logout','AuthController@logout');
-        Route::name('me')->get('me',"AuthController@me");
-        Route::patch('products/{product}/restore','ProductController@restore');
+    Route::group(['middleware' => ['auth:api', 'jwt.refresh']], function () {
 
-        Route::resource('products','ProductController',['except'=>['create','edit']]);
-        Route::resource('categories','CategoryController',['except'=>['create','edit']]);
+        Route::patch('profile','UserProfileController@update');
 
-        Route::resource('products.categories','ProductCategoryController',['only'=>['index','store','destroy']]);
-        Route::resource('products.photos','ProductPhotoController',['except'=>['create','edit']]);
+        Route::group(['middleware' => ['can:is_seller']], function () {
+            Route::name('logout')->post('logout', 'AuthController@logout');
+            Route::name('me')->get('me', "AuthController@me");
+            Route::patch('products/{product}/restore', 'ProductController@restore');
 
-        Route::resource('inputs','ProductInputController',['only'=>['index','store','show']]);
-        Route::resource('outputs','ProductOutputController',['only'=>['index','store','show']]);
+            Route::resource('products', 'ProductController', ['except' => ['create', 'edit']]);
+            Route::resource('categories', 'CategoryController', ['except' => ['create', 'edit']]);
+
+            Route::resource('products.categories', 'ProductCategoryController', ['only' => ['index', 'store', 'destroy']]);
+            Route::resource('products.photos', 'ProductPhotoController', ['except' => ['create', 'edit']]);
+
+            Route::resource('inputs', 'ProductInputController', ['only' => ['index', 'store', 'show']]);
+            Route::resource('outputs', 'ProductOutputController', ['only' => ['index', 'store', 'show']]);
 
 
-        Route::resource('users','UserController',['except'=>['create','edit']]);
+            Route::resource('users', 'UserController', ['except' => ['create', 'edit']]);
+        });
     });
 });
-
-
-
