@@ -1,12 +1,14 @@
 <?php
-
+declare(strict_types=1);
 namespace CodeShopping\Models;
 
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use PHPUnit\Framework\Constraint\Exception;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -34,6 +36,30 @@ class User extends Authenticatable implements JWTSubject
         'password', 'remember_token',
     ];
 
+    public static function createCustomer(array $data): User
+    {
+        try {
+            UserProfile::uploadPhoto($data['photo']);
+            DB::beginTransaction();
+            $user = self::createCustomerUser($data);
+            UserProfile::saveProfile($user, $data);
+            DB::commit();
+            return $user;
+        } catch (\Exception $e) {
+            UserProfile::deleteFile($data['photo']);
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public static function createCustomerUser($data)
+    {
+        $data['password'] = bcrypt(str_random(16));
+        $user = User::create($data);
+        $user->role = User::ROLE_CUSTOMER;
+        $user->save();
+        return $user;
+    }
 
     public function fill($attributes = [])
     {

@@ -30,13 +30,16 @@ class AuthController extends Controller
     public function loginFirebase(Request $request)
     {
         $this->validate($request, [
-            'token' => new FirebaseTokenVerification()
+            'token' => [
+                'required',
+                new FirebaseTokenVerification()
+            ]
         ]);
         $firebaseAuth = app(FirebaseAuth::class);
         $user = $firebaseAuth->user($request->token);
-        $profile = UserProfile::where('phone_number','=',$user->phoneNumber)->first();
+        $profile = UserProfile::where('phone_number', '=', $user->phoneNumber)->first();
         $token = null;
-        if($profile) {
+        if ($profile) {
             $token = \Auth::guard('api')->login($profile->user);
         }
         return $this->responseToken($token);
@@ -44,13 +47,13 @@ class AuthController extends Controller
 
     public function responseToken($token)
     {
-        return $token ? ['token'=>$token] : response()->json(['error'=>Lang::get('auth.failed')],400);
+        return $token ? ['token' => $token] : response()->json(['error' => Lang::get('auth.failed')], 400);
     }
 
     public function logout()
     {
         Auth::guard('api')->logout();
-        return response()->json([],204);
+        return response()->json([], 204);
     }
 
     public function me()
@@ -62,6 +65,6 @@ class AuthController extends Controller
     public function refresh()
     {
         $token = Auth::guard('api')->refresh();
-        return response()->json(['token'=>$token],200);
+        return response()->json(['token' => $token], 200);
     }
 }
