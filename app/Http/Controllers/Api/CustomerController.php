@@ -6,11 +6,12 @@ use Illuminate\Http\Request;
 use CodeShopping\Models\User;
 use CodeShopping\Firebase\Auth as Auth;
 use CodeShopping\Http\Controllers\Controller;
+use CodeShopping\Http\Requests\CustomerRequest;
 
 class CustomerController extends Controller
 {
 
-    public function store(Request $request)
+    public function store(CustomerRequest $request)
     {
         $data = $request->all();
         $token = $request->token;
