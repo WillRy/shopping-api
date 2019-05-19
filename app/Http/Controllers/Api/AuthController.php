@@ -2,13 +2,17 @@
 
 namespace CodeShopping\Http\Controllers\Api;
 
+use Kreait\Firebase;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use CodeShopping\Models\UserProfile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Lang;
 use CodeShopping\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use CodeShopping\Http\Resources\UserResource;
+use CodeShopping\Firebase\Auth as FirebaseAuth;
+use CodeShopping\Rules\FirebaseTokenVerification;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class AuthController extends Controller
 {
@@ -20,6 +24,26 @@ class AuthController extends Controller
         $credentials = $this->credentials($request);
         $token = JWTAuth::attempt($credentials);
 
+        return $this->responseToken($token);
+    }
+
+    public function loginFirebase(Request $request)
+    {
+        $this->validate($request, [
+            'token' => new FirebaseTokenVerification()
+        ]);
+        $firebaseAuth = app(FirebaseAuth::class);
+        $user = $firebaseAuth->user($request->token);
+        $profile = UserProfile::where('phone_number','=',$user->phoneNumber)->first();
+        $token = null;
+        if($profile) {
+            $token = \Auth::guard('api')->login($profile->user);
+        }
+        return $this->responseToken($token);
+    }
+
+    public function responseToken($token)
+    {
         return $token ? ['token'=>$token] : response()->json(['error'=>Lang::get('auth.failed')],400);
     }
 
