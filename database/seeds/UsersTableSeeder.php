@@ -15,7 +15,7 @@ class UsersTableSeeder extends Seeder
         factory(User::class,1)->create([
             'email'=>'admin@user.com'
         ])->each(function($user){
-            $user->profile->phone_number = '+166505551234';
+            $user->profile->phone_number = "+16505551234";
             $user->profile->save();
         });
 
