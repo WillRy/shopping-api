@@ -2,16 +2,17 @@
 
 namespace CodeShopping\Http\Controllers\Api;
 
+use Kreait\Firebase;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use CodeShopping\Models\UserProfile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Lang;
 use CodeShopping\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use CodeShopping\Http\Resources\UserResource;
-use Kreait\Firebase;
 use CodeShopping\Firebase\Auth as FirebaseAuth;
-use CodeShopping\Models\UserProfile;
+use CodeShopping\Rules\FirebaseTokenVerification;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class AuthController extends Controller
 {
@@ -28,6 +29,9 @@ class AuthController extends Controller
 
     public function loginFirebase(Request $request)
     {
+        $this->validate($request, [
+            'token' => new FirebaseTokenVerification()
+        ]);
         $firebaseAuth = app(FirebaseAuth::class);
         $user = $firebaseAuth->user($request->token);
         $profile = UserProfile::where('phone_number','=',$user->phoneNumber)->first();
