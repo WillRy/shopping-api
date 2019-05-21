@@ -20,6 +20,12 @@ class UserProfile extends Model
         'phone_number'
     ];
 
+    public function getPhotoUrlAttribute()
+    {
+        $path = self::photoDir();
+        return $this->photo ? asset("storage/{$path}/{$this->photo}") : 'https://www.gravatar.com/avatar/nouser.jpg';
+    }
+
     public static function photoPath()
     {
         $path = self::USER_PHOTO_PATH;
