@@ -28,7 +28,7 @@ class CustomerRequest extends FormRequest
         return [
             'name' => 'required|max:255',
             'email' => 'required|email|unique:users,email',
-            'photo' => 'required|image|max:' . (3 * 1024),
+            'photo' => 'image|max:' . (3 * 1024),
             'token' => [
                 'required',
                 new FirebaseTokenVerification(),
