@@ -31,7 +31,7 @@ class UsersTableSeeder extends Seeder
         ])->each(function ($user) {
             Model::reguard();
             $user->updateWithProfile([
-                'phone_number' => "+16505541234",
+                'phone_number' => "+16505551235",
                 'photo' => $this->getAdminPhoto()
             ]);
             Model::unguard();
