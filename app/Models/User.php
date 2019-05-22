@@ -36,6 +36,8 @@ class User extends Authenticatable implements JWTSubject
         'password', 'remember_token',
     ];
 
+
+
     public static function createCustomer(array $data): User
     {
         try {

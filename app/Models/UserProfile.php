@@ -20,6 +20,24 @@ class UserProfile extends Model
         'phone_number'
     ];
 
+    public static function createTokenToChangePhoneNumber(UserProfile $profile, $phoneNumber): string
+    {
+        $token = base64_encode($phoneNumber);
+        $profile->phone_number_token_to_change = $token;
+        $profile->save();
+        return $token;
+    }
+
+    public static function updatePhoneNumber($token): UserProfile
+    {
+        $profile = UserProfile::where('phone_number_token_to_change',$token)->firstOrFail();
+        $phoneNumber = base64_decode($token);
+        $profile->phone_number = $phoneNumber;
+        $profile->phone_number_token_to_change = null;
+        $profile->save();
+        return $profile;
+    }
+
     public function getPhotoUrlAttribute()
     {
         $path = self::photoDir();
