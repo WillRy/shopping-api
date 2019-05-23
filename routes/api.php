@@ -47,6 +47,8 @@ Route::group(['namespace' => 'Api', 'as' => 'api.'], function () {
 
 
             Route::resource('users', 'UserController', ['except' => ['create', 'edit']]);
+
+            Route::resource('chat_groups', 'ChatGroupController');
         });
     });
 });
