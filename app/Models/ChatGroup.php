@@ -2,6 +2,7 @@
 
 namespace CodeShopping\Models;
 
+use CodeShopping\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
@@ -98,5 +99,10 @@ class ChatGroup extends Model
     {
         $path = self::photoDir();
         return asset("storage/{$path}/{$this->photo}");
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
     }
 }

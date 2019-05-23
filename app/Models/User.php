@@ -2,13 +2,14 @@
 declare (strict_types = 1);
 namespace CodeShopping\Models;
 
+use CodeShopping\Models\ChatGroup;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
+use PHPUnit\Framework\Constraint\Exception;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use PHPUnit\Framework\Constraint\Exception;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -110,5 +111,10 @@ class User extends Authenticatable implements JWTSubject
     public function profile()
     {
         return $this->hasOne(UserProfile::class)->withDefault();
+    }
+
+    public function chatGroups()
+    {
+        return $this->belongsToMany(ChatGroup::class);
     }
 }
