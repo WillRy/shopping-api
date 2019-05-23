@@ -18,7 +18,7 @@ class ChatGroup extends Model
 
     const CHAT_GROUP_PHOTO_PATH = self::BASE_PATH . '/' . self::DIR_CHAT_GROUPS;
 
-    protected $fillable = ['name','photo'];
+    protected $fillable = ['name', 'photo'];
 
     protected $dates = ['deleted_at'];
 
@@ -35,6 +35,27 @@ class ChatGroup extends Model
             return $chatGroup;
         } catch (\Exception $e) {
             Self::deleteFile($data['photo']);
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function updateWithPhoto(array $data): ChatGroup
+    {
+        try {
+            if (isset($data['photo'])) {
+                Self::uploadPhoto($data['photo']);
+                $this->deletePhoto();
+                $data['photo'] = $data['photo']->hashName();
+            }
+            DB::beginTransaction();
+            $this->fill($data)->save();
+            DB::commit();
+            return $this;
+        } catch (\Exception $e) {
+            if (isset($data['photo'])) {
+                Self::deleteFile($data['photo']);
+            }
             DB::rollBack();
             throw $e;
         }
@@ -78,5 +99,4 @@ class ChatGroup extends Model
         $path = self::photoDir();
         return asset("storage/{$path}/{$this->photo}");
     }
-
 }

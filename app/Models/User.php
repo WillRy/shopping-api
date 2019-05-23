@@ -66,7 +66,7 @@ class User extends Authenticatable implements JWTSubject
     public function updateWithProfile(array $data): User
     {
         try {
-            if (isset($data['photo'])){
+            if (isset($data['photo'])) {
                 UserProfile::uploadPhoto($data['photo']);
             }
             DB::beginTransaction();
@@ -76,7 +76,9 @@ class User extends Authenticatable implements JWTSubject
             DB::commit();
             return $this;
         } catch (\Exception $e) {
-            UserProfile::deleteFile($data['photo']);
+            if (isset($data['photo'])) {
+                UserProfile::deleteFile($data['photo']);
+            }
             DB::rollBack();
             throw $e;
         }
