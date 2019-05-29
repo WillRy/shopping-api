@@ -10,10 +10,11 @@ use Illuminate\Notifications\Notifiable;
 use PHPUnit\Framework\Constraint\Exception;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use CodeShopping\Firebase\FirebaseSync;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use Notifiable, SoftDeletes;
+    use Notifiable, SoftDeletes, FirebaseSync;
 
     const ROLE_SELLER = 1;
     const ROLE_CUSTOMER = 2;
@@ -116,5 +117,35 @@ class User extends Authenticatable implements JWTSubject
     public function chatGroups()
     {
         return $this->belongsToMany(ChatGroup::class);
+    }
+
+    public function syncFbCreate()
+    {
+        $this->syncFbSetCustom();
+    }
+
+    public function syncFbUpdate()
+    {
+        $this->syncFbSetCustom();
+    }
+
+    protected function syncFbRemove()
+    {
+        $this->syncFbSetCustom();
+    }
+
+    public function syncFbSetCustom()
+    {
+        $this->profile->refresh(); //profile -> user -> profile
+        if($this->profile->firebase_uid){
+            $database = $this->getFirebaseDatabase();
+            $path = 'users/'.$this->profile->firebase_uid;
+            $reference = $database->getReference($path);
+            $reference->set([
+                'name' => $this->name,
+                'photo_url' => $this->profile->photo_url_base,
+                'deleted_at' => $this->deleted_at
+            ]);
+        }
     }
 }
