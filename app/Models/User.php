@@ -5,16 +5,16 @@ namespace CodeShopping\Models;
 use CodeShopping\Models\ChatGroup;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use CodeShopping\Firebase\FirebaseSync;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
-use PHPUnit\Framework\Constraint\Exception;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Mnabialek\LaravelEloquentFilter\Traits\Filterable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use CodeShopping\Firebase\FirebaseSync;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use Notifiable, SoftDeletes, FirebaseSync;
+    use Notifiable, SoftDeletes, Filterable,  FirebaseSync;
 
     const ROLE_SELLER = 1;
     const ROLE_CUSTOMER = 2;
