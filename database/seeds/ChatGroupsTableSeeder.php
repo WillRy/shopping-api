@@ -2,10 +2,7 @@
 
 use CodeShopping\Models\User;
 use Illuminate\Database\Seeder;
-use CodeShopping\Models\Product;
-use Illuminate\Http\UploadedFile;
 use CodeShopping\Models\ChatGroup;
-use CodeShopping\Models\ProductPhoto;
 
 class ChatGroupsTableSeeder extends Seeder
 {
@@ -24,7 +21,7 @@ class ChatGroupsTableSeeder extends Seeder
             ->whereNotIn('id', [$customerDefault->id])
             ->get();
 
-        factory(ChatGroup::class, 10)->make()->each(function ($group) use ($self, $otherCustomers ) {
+        factory(ChatGroup::class, 10)->make()->each(function ($group) use ($self, $otherCustomers) {
             $group = ChatGroup::createWithPhoto([
                 'name' => $group->name,
                 'photo' => $self->getUploadedFile()
@@ -48,10 +45,10 @@ class ChatGroupsTableSeeder extends Seeder
         \File::deleteDirectory(storage_path($path), true);
     }
 
-    private function getUploadedFile()
-    {
+    private function getUploadedFile(){
+        /** @var SplFileInfo $photoFile */
         $photoFile = $this->allFakerPhotos->random();
-        $uploadFile = new UploadedFile(
+        $uploadFile = new \Illuminate\Http\UploadedFile(
             $photoFile->getRealPath(),
             str_random(16) . '.' . $photoFile->getExtension()
         );

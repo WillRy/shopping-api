@@ -5,14 +5,15 @@ namespace CodeShopping\Models;
 use CodeShopping\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use CodeShopping\Firebase\FirebaseSync;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use CodeShopping\Firebase\FirebaseSync;
+use Fico7489\Laravel\Pivot\Traits\PivotEventTrait;
 
 class ChatGroup extends Model
 {
 
-    use SoftDeletes, FirebaseSync;
+    use SoftDeletes, FirebaseSync, PivotEventTrait;
 
     const BASE_PATH = 'app/public';
     const DIR_CHAT_GROUPS = 'chat_groups';
@@ -25,42 +26,43 @@ class ChatGroup extends Model
     protected $dates = ['deleted_at'];
 
 
-    public static function createWithPhoto(array $data): ChatGroup
+    public static function createWithPhoto (array $data): ChatGroup
     {
         try {
-            Self::uploadPhoto($data['photo']);
+            $photo = $data['photo'];
+            self::uploadPhoto($data['photo']);
             $data['photo'] = $data['photo']->hashName();
-
-            DB::beginTransaction();
-            $chatGroup = Self::create($data);
-            DB::commit();
-            return $chatGroup;
+            \DB::beginTransaction();
+            $chatGroup = self::create($data);
+            \DB::commit();
         } catch (\Exception $e) {
-            Self::deleteFile($data['photo']);
-            DB::rollBack();
+            self::deleteFile($photo);
+            \DB::rollBack();
             throw $e;
         }
+        return $chatGroup;
     }
 
-    public function updateWithPhoto(array $data): ChatGroup
+    public function updateWithPhoto (array $data): ChatGroup
     {
         try {
-            if (isset($data['photo'])) {
-                Self::uploadPhoto($data['photo']);
+            $photo = $data['photo'];
+            if (isset($data['photo'])){
+                self::uploadPhoto($data['photo']);
                 $this->deletePhoto();
                 $data['photo'] = $data['photo']->hashName();
             }
-            DB::beginTransaction();
+            \DB::beginTransaction();
             $this->fill($data)->save();
-            DB::commit();
-            return $this;
+            \DB::commit();
         } catch (\Exception $e) {
-            if (isset($data['photo'])) {
-                Self::deleteFile($data['photo']);
+            if (isset($photo)){
+                self::deleteFile($photo);
             }
-            DB::rollBack();
+            \DB::rollBack();
             throw $e;
         }
+        return $this;
     }
 
     public static function uploadPhoto(UploadedFile $photo)
@@ -69,15 +71,14 @@ class ChatGroup extends Model
         $photo->store($dir, ['disk' => 'public']);
     }
 
-    public static function deleteFile(UploadedFile $photo)
+    private static function deleteFile(UploadedFile $photo)
     {
         $path = self::photoPath();
         $photoPath = "{$path}/{$photo->hashName()}";
-        if (file_exists($photoPath)) {
+        if (file_exists($photoPath)){
             \File::delete($photoPath);
         }
     }
-
     private function deletePhoto()
     {
         $dir = self::photoDir();
@@ -128,5 +129,23 @@ class ChatGroup extends Model
         return "{$path}/{$this->photo}";
     }
 
+    protected function syncPivotAttached($model, $relationName, $pivotIds, $pivotIdsAttribute)
+    {
+        $users = User::whereIn('id', $pivotIds)->get();
+        $data = [];
+        foreach($users as $user) {
+            $data["chat_groups/{$model->id}/users/{$user->profile->firebase_uid}"] = true;
+        }
+        $this->getFirebaseDatabase()->getReference()->update($data);
+    }
 
+    protected function syncPivotDetached($model, $relationName, $pivotIds)
+    {
+        $users = User::whereIn('id', $pivotIds)->get();
+        $data = [];
+        foreach($users as $user) {
+            $data["chat_groups/{$model->id}/users/{$user->profile->firebase_uid}"] = null;
+        }
+        $this->getFirebaseDatabase()->getReference()->update($data);
+    }
 }
