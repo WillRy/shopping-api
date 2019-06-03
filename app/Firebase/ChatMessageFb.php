@@ -4,7 +4,9 @@ declare (strict_types = 1);
 namespace CodeShopping\Firebase;
 
 use Kreait\Firebase;
+use Illuminate\Http\UploadedFile;
 use CodeShopping\Models\ChatGroup;
+
 
 class ChatMessageFb
 {
@@ -18,20 +20,37 @@ class ChatMessageFb
         $this->chatGroup = $data['chat_group'];
         $type = $data['type'];
 
-        switch($type) {
+        switch ($type) {
             case 'audio':
-            break;
+                $this->upload($data['content']);
+                $uploadedFile = $data['content'];
+                $fileUrl = $this->groupFilesDir() . '/' . $uploadedFile->hashName();
+                $data['content'] = $fileUrl;
+                break;
             case 'image':
-            break;
-
+                $this->upload($data['content']);
+                $uploadedFile = $data['content'];
+                $fileUrl = $this->groupFilesDir() . '/' . $uploadedFile->hashName();
+                $data['content'] = $fileUrl;
+                break;
         }
         $reference = $this->getMessagesReference();
         $reference->push([
-            'type'=>$data['type'],
-            'content'=>$data['content'],
-            'created_at'=>['.sv'=>'timestamp'],
-            'user_id'=>$data['firebase_uid']
+            'type' => $data['type'],
+            'content' => $data['content'],
+            'created_at' => ['.sv' => 'timestamp'],
+            'user_id' => $data['firebase_uid']
         ]);
+    }
+
+    private function upload(UploadedFile $file)
+    {
+        $file->store($this->groupFilesDir(), ['disk' => 'public']);
+    }
+
+    private function groupFilesDir()
+    {
+        return ChatGroup::DIR_CHAT_GROUPS . '/' . $this->chatGroup->id . '/messages_files';
     }
 
     private function getMessagesReference()
