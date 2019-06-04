@@ -140,7 +140,7 @@ class User extends Authenticatable implements JWTSubject
         $this->profile->refresh(); //profile -> user -> profile
         if($this->profile->firebase_uid){
             $database = $this->getFirebaseDatabase();
-            $path = 'users/'.$this->profile->firebase_uid;
+            $path = '/users/'.$this->profile->firebase_uid;
             $reference = $database->getReference($path);
             $reference->set([
                 'name' => $this->name,
