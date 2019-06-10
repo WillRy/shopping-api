@@ -7,6 +7,10 @@ use Kreait\Firebase;
 trait FirebaseSync
 {
 
+    private static $OPERATION_CREATE = 1;
+    private static $OPERATION_UPDATE = 2;
+
+
     public static function  bootFirebaseSync()
     {
         static::created(function ($model) {
@@ -35,12 +39,12 @@ trait FirebaseSync
 
     public function syncFbCreate()
     {
-        $this->syncFbSet();
+        $this->syncFbSet(self::$OPERATION_CREATE);
     }
 
     public function syncFbUpdate()
     {
-        $this->syncFbSet();
+        $this->syncFbSet(self::$OPERATION_UPDATE);
     }
 
     public function syncFbRemove()
@@ -48,9 +52,26 @@ trait FirebaseSync
         $this->getModelReference()->remove();
     }
 
-    public function syncFbSet()
+    public function syncFbSet($operation = null)
     {
+
+        $data = $this->toArray();
+        $this->setTimestamps($data, $operation);
         $this->getModelReference()->update($this->toArray());
+    }
+
+    private function setTimestamps(&$data, $operation)
+    {
+        if($operation === self::$OPERATION_CREATE){
+            $data['created_at'] = ['.sv'=>'timestamp'];
+            $data['updated_at'] = ['.sv'=>'timestamp'];
+        }
+        if($operation === self::$OPERATION_UPDATE){
+            if(isset($data['created_at'])){
+                unset($data['created_at']);
+            }
+            $data['updated_at'] = ['.sv'=>'timestamp'];
+        }
     }
 
     protected function syncPivotAttached($model, $relationName, $pivotIds, $pivotIdsAttribute)

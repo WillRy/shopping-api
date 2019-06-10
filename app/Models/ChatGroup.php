@@ -109,11 +109,12 @@ class ChatGroup extends Model
         $this->syncFbSet();
     }
 
-    public function syncFbSet()
+    public function syncFbSet($operation = null)
     {
         $data = $this->toArray();
         $data['photo_url'] = $this->photo_url_base;
         unset($data['photo']);
+        $this->setTimestamps($data, $operation);
         $this->getModelReference()->set($data);
     }
 
@@ -151,6 +152,6 @@ class ChatGroup extends Model
     }
     private function chatGroupUsersKey($model, $user)
     {
-        return "chat_groups/{$model->id}/users/{$user->profile->firebase_uid}";
+        return "chat_groups_users/{$model->id}/{$user->profile->firebase_uid}";
     }
 }
