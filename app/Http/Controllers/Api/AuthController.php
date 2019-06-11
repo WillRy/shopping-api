@@ -30,14 +30,11 @@ class AuthController extends Controller
     public function loginFirebase(Request $request)
     {
         $this->validate($request, [
-            'token' => [
-                'required',
-                new FirebaseTokenVerification()
-            ]
+            'token' => ['required', new FirebaseTokenVerification()]
         ]);
         $firebaseAuth = app(FirebaseAuth::class);
         $user = $firebaseAuth->user($request->token);
-        $profile = UserProfile::where('phone_number', '=', $user->phoneNumber)->first();
+        $profile = UserProfile::where('phone_number', $user->phoneNumber)->first();
         $token = null;
         if ($profile) {
             $profile->firebase_uid = $user->uid;

@@ -29,11 +29,12 @@ class FirebaseTokenVerification implements Rule
         $firebaseAuth = app(FirebaseAuth::class);
         try {
             $firebaseAuth->user($value);
-            return true;
+
         } catch (\Exception $e) {
+
             return false;
         }
-
+        return true;
     }
 
     /**

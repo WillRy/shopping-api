@@ -101,6 +101,7 @@ class User extends Authenticatable implements JWTSubject
         return [
             'email' => $this->email,
             'name' => $this->name,
+            'role' => $this->role,
             'profile' => [
                 'has_photo' => $this->profile->photo ? true : false,
                 'photo_url' => $this->profile->photo_url,
@@ -144,6 +145,7 @@ class User extends Authenticatable implements JWTSubject
             $reference = $database->getReference($path);
             $reference->set([
                 'name' => $this->name,
+                'role' => $this->role,
                 'photo_url' => $this->profile->photo_url_base,
                 'deleted_at' => $this->deleted_at
             ]);
