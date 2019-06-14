@@ -1,30 +1,40 @@
 <?php
-
+declare(strict_types=1);
 use Illuminate\Database\Seeder;
 use CodeShopping\Models\User;
 use CodeShopping\Models\ChatGroup;
 use Faker\Factory as FakerFactory;
 use CodeShopping\Firebase\ChatMessageFb;
+use Illuminate\Http\UploadedFile;
 
 class ChatMessagesFbSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
+
+    protected $numMessages = 10;
+    private $allFakerFiles;
+    private $fakerFilesPath = 'app/faker/chat_message_files';
+
     public function run()
     {
-        $chatGroups = ChatGroup::all();
-        $users = User::all();
+        $this->allFakerFiles = $this->getFakerFiles();
 
+        $chatGroups = $this->getChatGroups();
+        $users = User::all();
         $chatMessage = new ChatMessageFb();
 
-        $chatGroups->each(function ($group) use ($users, $chatMessage) {
+        $self = $this;
+        $chatGroups->each(function ($group) use ($users, $chatMessage, $self) {
             $chatMessage->deleteMessages($group);
-            foreach (range(1, 10) as $value) {
-                $content = FakerFactory::create()->sentence(10);
-                $type = 'text';
+            foreach (range(1, $self->numMessages) as $value) {
+                $textOrFile = rand(1,10) % 2 === 0 ? 'text' : 'file';
+
+                if($textOrFile === 'text'){
+                    $content = FakerFactory::create()->sentence(10);
+                    $type = 'text';
+                }else{
+                    $content = $self->getUploadedFile();
+                    $type = $content->getExtension() === 'wav' ? 'audio' : 'image';
+                }
 
                 $chatMessage->create([
                     'chat_group' => $group,
@@ -34,5 +44,25 @@ class ChatMessagesFbSeeder extends Seeder
                 ]);
             }
         });
+    }
+
+    protected function getChatGroups()
+    {
+        return ChatGroup::all();
+    }
+    public function getFakerFiles()
+    {
+        $path = storage_path($this->fakerFilesPath);
+        return collect(\File::allFiles($path));
+    }
+
+    public function getUploadedFile():UploadedFile
+    {
+        $photoFile = $this->allFakerFiles->random();
+        $uploadFile = new UploadedFile(
+            $photoFile->getRealPath(),
+            str_random(16).'.'.$photoFile->getExtension()
+        );
+        return $uploadFile;
     }
 }
