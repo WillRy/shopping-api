@@ -31,10 +31,11 @@ class UserProfileRequest extends FormRequest
             'email' => "email|unique:users,email,{$userId}",
             'photo' => 'image|max:' . (3 * 1024),
             'password' => 'string|min:6|confirmed',
+            'device_token' => 'string',
             'token' => [
                 new FirebaseTokenVerification(),
                 new PhoneNumberUnique($userId)
-            ]
+            ],
         ];
     }
 }
