@@ -20,7 +20,8 @@ class UserProfile extends Model
 
     protected $fillable = [
         'photo',
-        'phone_number'
+        'phone_number',
+        'device_token'
     ];
 
     public static function createTokenToChangePhoneNumber(UserProfile $profile, $phoneNumber): string

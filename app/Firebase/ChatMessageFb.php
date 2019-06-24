@@ -6,7 +6,7 @@ namespace CodeShopping\Firebase;
 use Kreait\Firebase;
 use Illuminate\Http\UploadedFile;
 use CodeShopping\Models\ChatGroup;
-
+use CodeShopping\Events\ChatMessageSent;
 
 class ChatMessageFb
 {
@@ -39,10 +39,14 @@ class ChatMessageFb
             'type' => $data['type'],
             'content' => $data['content'],
             'created_at' => ['.sv' => 'timestamp'],
-            'user_id' => $data['firebase_uid']
+            'user_id' => $data['user']->profile->firebase_uid
         ]);
         $this->setLastMessage($newReference->getKey());
         $this->chatGroup->updateInFb();
+
+        if(!app()->runningInConsole() && !app()->runningUnitTests()){
+            event(new ChatMessageSent($this->chatGroup, $data['type'], $data['content'], $data['user']));
+        }
     }
 
     private function buildFileName(UploadedFile $file)
