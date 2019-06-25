@@ -5,7 +5,7 @@ namespace CodeShopping\Models;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
-class ChatGroupInvitation extends  Model
+class ChatGroupInvitation extends Model
 {
 
     protected $fillable = ['total', 'expires_at', 'group_id'];

@@ -104,6 +104,11 @@ class ChatGroup extends Model
         return $this->belongsToMany(User::class);
     }
 
+    public function linkInvitations()
+    {
+        return $this->hasMany(ChatGroupInvitation::class, 'group_id');
+    }
+
     public function syncFbRemove()
     {
         $this->syncFbSet();
