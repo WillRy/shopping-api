@@ -10,6 +10,7 @@ use CodeShopping\Models\ProductInput;
 use CodeShopping\Models\ProductOutput;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use CodeShopping\Models\ChatGroupInvitation;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,6 +34,14 @@ class AppServiceProvider extends ServiceProvider
                 throw new \Exception("Estoque de {$product->name} não pode ser negativo");
             }
             $product->save();
+        });
+
+        ChatGroupInvitation::creating(function($invitation){
+            $invitation->slug = str_random(7);
+            $invitation->remaining = $invitation->total;
+        });
+        ChatGroupInvitation::updating(function($invitation){
+            $invitation->remaining = $invitation->total;
         });
     }
 
