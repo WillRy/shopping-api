@@ -41,9 +41,11 @@ class ChatGroupInvitationController extends Controller
     }
 
 
-    public function destroy($id)
+    public function destroy(ChatGroup $chat_group, ChatGroupInvitation $link_invitation)
     {
-
+        $this->assertInvitation($chat_group, $link_invitation);
+        $link_invitation->delete();
+        return response()->json([],204);
     }
 
     public function assertInvitation(ChatGroup $chatGroup, ChatGroupInvitation $link_invitation)

@@ -4,9 +4,12 @@ namespace CodeShopping\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ChatGroupInvitation extends Model
 {
+
+    use SoftDeletes;
 
     protected $fillable = ['total', 'expires_at', 'group_id'];
     protected $dates = ['expires_at', 'deleted_at'];
