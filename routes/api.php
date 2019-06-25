@@ -54,6 +54,8 @@ Route::group(['namespace' => 'Api', 'as' => 'api.'], function () {
 
             Route::resource('chat_groups', 'ChatGroupController');
             Route::resource('chat_groups.users','ChatGroupUserController', ['only' => ['index', 'store', 'destroy']]);
+
+            Route::resource('chat_groups.link_invitations','ChatGroupInvitationController', ['except' => ['create', 'edit']]);
         });
     });
 });
