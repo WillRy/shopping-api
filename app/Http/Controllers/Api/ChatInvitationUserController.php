@@ -1,6 +1,6 @@
 <?php
 
-namespace CodeShopping\Http\Controllers;
+namespace CodeShopping\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use CodeShopping\ChatInvitationUser;
