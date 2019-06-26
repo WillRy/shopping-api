@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use CodeShopping\Common\OnlyTrashed;
+use CodeShopping\Models\ChatGroupInvitation;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -47,6 +48,10 @@ class RouteServiceProvider extends ServiceProvider
             $request = app(Request::class);
             $query = $this->onlyTrashedIfRequest($request,$query);
             return $query->whereId($value)->firstOrFail();
+        });
+
+        Route::bind('invitation_slug', function ($value) {
+            return ChatGroupInvitation::where('slug',$value)->first();
         });
     }
 
