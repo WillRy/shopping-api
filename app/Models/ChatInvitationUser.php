@@ -13,7 +13,7 @@ class ChatInvitationUser extends Model
 
     protected $fillable = ['invitation_id', 'user_id'];
 
-    public function createIfAllowed(ChatGroupInvitation $groupInvitation, User $user)
+    public static function createIfAllowed(ChatGroupInvitation $groupInvitation, User $user)
     {
         self::throwIfNotAllowed($groupInvitation, $user);
         return self::create([
@@ -24,14 +24,14 @@ class ChatInvitationUser extends Model
 
     public static function throwIfNotAllowed(ChatGroupInvitation $groupInvitation, User $user)
     {
-        if ($groupInvitation->hasInvitation()) {
+        if (!$groupInvitation->hasInvitation()) {
             throw new ChatInvitationUserException(
                 'Ingresso no grupo não permitido',
                 ChatInvitationUserException::ERROR_NOT_INVITATION
             );
         }
 
-        if ($user->role == User::ROLE_CUSTOMER) {
+        if ($user->role == User::ROLE_SELLER) {
             throw new ChatInvitationUserException(
                 'Vendedor nao precisa ingressar em grupo',
                 ChatInvitationUserException::ERROR_HAS_SELLER
