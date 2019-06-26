@@ -3,10 +3,12 @@
 namespace CodeShopping\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use CodeShopping\ChatInvitationUser;
+use Illuminate\Support\Facades\Auth;
+use CodeShopping\Models\ChatInvitationUser;
 use CodeShopping\Models\ChatGroupInvitation;
 use CodeShopping\Http\Controllers\Controller;
 use CodeShopping\Exceptions\ChatInvitationUserException;
+use CodeShopping\Http\Resources\ChatInvitationUserResource;
 
 class ChatInvitationUserController extends Controller
 {
@@ -26,8 +28,8 @@ class ChatInvitationUserController extends Controller
     public function store(ChatGroupInvitation $invitation_slug)
     {
         try {
-            $invitationUser = ChatInvitationUser::createIfAllowed($invitation_slug, \Auth::guard('api')->user);
-
+            $invitationUser = ChatInvitationUser::createIfAllowed($invitation_slug, Auth::guard('api')->user());
+            return new ChatInvitationUserResource($invitationUser);
         } catch (ChatInvitationUserException $e) {
             switch($e->getCode()){
                 case ChatInvitationUserException::ERROR_NOT_INVITATION:
