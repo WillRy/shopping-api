@@ -27,7 +27,6 @@ Route::group(['namespace' => 'Api', 'as' => 'api.'], function () {
 
     Route::resource('customers', "CustomerController", ['only' => ['store']]);
 
-    Route::post('chat_invitations/{slug}',"ChatInvitationUserController@store");
 
     Route::group(['middleware' =>
     ['auth:api'
@@ -37,6 +36,8 @@ Route::group(['namespace' => 'Api', 'as' => 'api.'], function () {
 
         Route::patch('profile','UserProfileController@update');
         Route::resource('chat_groups.messages','ChatMessageFbController',['only'=>'store']);
+
+        Route::post('chat_invitations/{invitation_slug}',"ChatInvitationUserController@store");
 
         Route::group(['middleware' => ['can:is_seller']], function () {
             Route::name('me')->get('me', "AuthController@me");
