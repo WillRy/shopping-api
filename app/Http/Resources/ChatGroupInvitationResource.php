@@ -18,10 +18,15 @@ class ChatGroupInvitationResource extends JsonResource
 
     public function toArray($request)
     {
+        $link = env('MOBILE_PAGE_LINK').'?link=https://code.education/group/'
+        .$this->slug
+        .'&apn='.env('MOBILE_ID')
+        .'&ibi='.env('MOBILE_ID');
         $data =  [
             'id'=>$this->id,
             'total'=> (int) $this->total,
             'remaining'=>(int) $this->remaining,
+            'link' => $link,
             'expires_at'=>$this->expires_at,
             'created_at'=>$this->created_at,
             'updated_at'=>$this->updated_at,
