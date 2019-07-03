@@ -10,8 +10,9 @@ use CodeShopping\Models\ProductInput;
 use CodeShopping\Models\ProductOutput;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
-use CodeShopping\Models\ChatGroupInvitation;
+use CodeShopping\Firebase\NotificationType;
 use CodeShopping\Models\ChatInvitationUser;
+use CodeShopping\Models\ChatGroupInvitation;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -44,7 +45,7 @@ class AppServiceProvider extends ServiceProvider
         ChatGroupInvitation::updating(function (ChatGroupInvitation $invitation) {
             $oldRemaining = $invitation->getOriginal('remaining');
             $newRemaining = $invitation->remaining;
-            if($oldRemaining === $newRemaining){
+            if ($oldRemaining === $newRemaining) {
                 $invitation->remaining = $invitation->total;
             }
         });
@@ -66,6 +67,20 @@ class AppServiceProvider extends ServiceProvider
             $group = $userInvitation->invitation->group;
             $user_id = $userInvitation->user->id;
             $group->users()->attach($user_id);
+
+            $token = $userInvitation->user->profile->device_token;
+            if (!$token) {
+                return;
+            }
+            $messaging = app(CloudMessagingFb::class);
+            $messaging->setTitle("Sua inscrição foi aprovada")
+                ->setBody('Voce está inscrito em um novo grupo')
+                ->setTokens([$token])
+                ->setData([
+                    'type' => NotificationType::CHAT_GROUP_SUBSCRIBE,
+                    'chat_group_name' => $group->name
+                ])
+                ->send();
         });
     }
 
