@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use CodeShopping\Models\ChatGroup;
 use CodeShopping\Firebase\CloudMessagingFb;
+use CodeShopping\Firebase\NotificationType;
 
 class SendPushChatGroupMembers
 {
@@ -40,6 +41,7 @@ class SendPushChatGroupMembers
                   ->setBody($this->getBody())
                   ->setTokens($tokens)
                   ->setData([
+                      'type' => NotificationType::NEW_MESSAGE,
                       'chat_group_id' => $chatGroup->id
                   ])
                   ->send();
