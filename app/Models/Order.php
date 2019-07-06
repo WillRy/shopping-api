@@ -12,7 +12,7 @@ class Order extends Model
 
     const STATUS_PENDING = 1;
     const STATUS_APPROVED = 2;
-    const STATUS_CANCELED = 3;
+    const STATUS_CANCELLED = 3;
     const STATUS_SENT = 4;
 
     protected $fillable = ['user_id', 'product_id', 'amount', 'price', 'total'];
