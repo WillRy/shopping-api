@@ -16,7 +16,9 @@ class ProductPhotosTableSeeder extends Seeder
         $this->allFakerPhotos = $this->getFakerPhotos();
 
         $product = Product::all();
-        $this->deleteAllPhotosInProductsPath();
+
+        // removido exclusão de arquivos, pois seeder ProductsTableSeeder, irá fazer anteriormente
+        // $this->deleteAllPhotosInProductsPath();
         $self = $this;
         $product->each(function ($product) use ($self) {
             $self->createPhotoDir($product);

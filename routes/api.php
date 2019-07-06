@@ -39,6 +39,11 @@ Route::group(['namespace' => 'Api', 'as' => 'api.'], function () {
 
         Route::post('chat_invitations/{invitation_slug}',"ChatInvitationUserController@store");
 
+        Route::group(['prefix' => 'open', "namespace" => "Open"], function(){
+            Route::resource('products',"ProductController", ['only'=>['index','show']]);
+            Route::get('categories',"CategoryController@index");
+        });
+
         Route::group(['middleware' => ['can:is_seller']], function () {
             Route::name('me')->get('me', "AuthController@me");
             Route::patch('products/{product}/restore', 'ProductController@restore');

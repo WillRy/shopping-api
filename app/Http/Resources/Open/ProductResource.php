@@ -1,6 +1,6 @@
 <?php
 
-namespace CodeShopping\Http\Resources;
+namespace CodeShopping\Http\Resources\Open;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,7 +20,6 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'slug' => $this->slug,
             'price' => (float) $this->price,
-            'stock' => (int) $this->stock,
             'active' => (bool)$this->active,
             'photo_url' => $this->photo_url,
             'created_at' => $this->created_at,

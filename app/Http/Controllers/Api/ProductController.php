@@ -30,7 +30,7 @@ class ProductController extends Controller
 
     public function store(ProductRequest $request)
     {
-        $product = Product::create($request->all());
+        $product = Product::createWithPhoto($request->all());
         $product->refresh();
         return new ProductResource($product);
     }
@@ -43,8 +43,7 @@ class ProductController extends Controller
 
     public function update(ProductRequest $request, Product $product)
     {
-        $product->fill($request->all());
-        $product->save();
+        $product->updateWithPhoto($request->all());
         return new ProductResource($product);
     }
 
