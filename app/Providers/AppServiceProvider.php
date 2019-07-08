@@ -4,12 +4,14 @@ namespace CodeShopping\Providers;
 
 use Kreait\Firebase;
 use Kreait\Firebase\Factory;
+use CodeShopping\Models\Order;
 use CodeShopping\Models\Product;
 use Kreait\Firebase\ServiceAccount;
 use CodeShopping\Models\ProductInput;
 use CodeShopping\Models\ProductOutput;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use CodeShopping\Observers\OrderObserver;
 use CodeShopping\Firebase\NotificationType;
 use CodeShopping\Models\ChatInvitationUser;
 use CodeShopping\Models\ChatGroupInvitation;
@@ -82,6 +84,8 @@ class AppServiceProvider extends ServiceProvider
                 ])
                 ->send();
         });
+
+        Order::observe(OrderObserver::class);
     }
 
     /**
