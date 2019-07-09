@@ -39,9 +39,9 @@ class OrderObserver
             return;
         }
 
-        $oldPaymentLink = $order->getOriginal('payment_link');
+        $oldStatus = $order->getOriginal('status');
 
-        if($order->payment_link && $order->payment_link != $oldPaymentLink){
+        if ($oldStatus !== $order->status) {
             $messaging = app(CloudMessagingFb::class);
             $messaging->setTitle("Link de pagamento do pedido")
                 ->setBody('Acesse o app para pagar o pedido feito')
@@ -54,6 +54,30 @@ class OrderObserver
         }
     }
 
+    private function handleIfApproved(Order $order)
+    {
+        if (Order::STATUS_APPROVED != $order->status) {
+            return;
+        }
+        $token = $order->user->profile->device_token;
+
+        if (!$token || $this->runningInTerminal()) {
+            return;
+        }
+
+        $oldPaymentLink = $order->getOriginal('payment_link');
+
+        $messaging = app(CloudMessagingFb::class);
+        $messaging->setTitle("Seu pedido foi aprovado")
+            ->setBody("Em breve o produto {$order->product->name} será enviado")
+            ->setTokens([$token])
+            ->setData([
+                'type' => NotificationType::ORDER_APPROVED,
+                'order' => $order->id
+            ])
+            ->send();
+    }
+
     private function handleIfCancel(Order $order)
     {
         if (Order::STATUS_CANCELLED != $order->status) {
@@ -61,12 +85,6 @@ class OrderObserver
         }
     }
 
-    private function handleIfApproved(Order $order)
-    {
-        if (Order::STATUS_APPROVED != $order->status) {
-            return;
-        }
-    }
 
     private function handleIfSent(Order $order)
     {
