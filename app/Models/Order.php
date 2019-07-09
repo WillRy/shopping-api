@@ -25,6 +25,18 @@ class Order extends Model
         self::create($data);
     }
 
+    public function updateWithProduct()
+    {
+        try {
+            \DB::beginTransaction();
+            $this->save();
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            throw $e;
+        }
+    }
+
     public function product()
     {
         return $this->belongsTo(Product::class)->withTrashed();

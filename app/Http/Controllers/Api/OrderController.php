@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use CodeShopping\Models\Order;
 use CodeShopping\Rules\OrderStatusChange;
 use CodeShopping\Http\Filters\OrderFilter;
+use CodeShopping\Exceptions\StockException;
 use CodeShopping\Http\Controllers\Controller;
 use CodeShopping\Http\Resources\OrderResource;
 use CodeShopping\Rules\OrderPaymentLinkChange;
@@ -43,7 +44,13 @@ class OrderController extends Controller
         $order->status = $request->get('status') ?? $order->status;
         $order->obs = $request->get('obs') ?? $order->obs;
         $order->payment_link = $request->get('payment_link') ?? $order->payment_link;
-        $order->save();
-        return new OrderResource($order);
+        try {
+            $order->updateWithProduct();
+            return new OrderResource($order);
+        } catch (StockException $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 422);
+        }
     }
 }

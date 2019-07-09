@@ -39,9 +39,9 @@ class OrderObserver
             return;
         }
 
-        $oldStatus = $order->getOriginal('status');
+        $oldPaymentLink = $order->getOriginal('payment_link');
 
-        if ($oldStatus !== $order->status) {
+        if($order->payment_link && $order->payment_link != $oldPaymentLink){
             $messaging = app(CloudMessagingFb::class);
             $messaging->setTitle("Link de pagamento do pedido")
                 ->setBody('Acesse o app para pagar o pedido feito')
@@ -65,17 +65,19 @@ class OrderObserver
             return;
         }
 
-        $oldPaymentLink = $order->getOriginal('payment_link');
+        $oldStatus = $order->getOriginal('status');
 
-        $messaging = app(CloudMessagingFb::class);
-        $messaging->setTitle("Seu pedido foi aprovado")
-            ->setBody("Em breve o produto {$order->product->name} será enviado")
-            ->setTokens([$token])
-            ->setData([
-                'type' => NotificationType::ORDER_APPROVED,
-                'order' => $order->id
-            ])
-            ->send();
+        if($oldStatus != $order->status){
+            $messaging = app(CloudMessagingFb::class);
+            $messaging->setTitle("Seu pedido foi aprovado")
+                ->setBody("Em breve o produto {$order->product->name} será enviado")
+                ->setTokens([$token])
+                ->setData([
+                    'type' => NotificationType::ORDER_APPROVED,
+                    'order' => $order->id
+                ])
+                ->send();
+        }
     }
 
     private function handleIfCancel(Order $order)
@@ -90,6 +92,29 @@ class OrderObserver
     {
         if (Order::STATUS_SENT != $order->status) {
             return;
+        }
+        $oldStatus = $order->getOriginal('status');
+
+        if($oldStatus != $order->status){
+            // lock na row para evitar dados equivocados
+            $product = $order->product()->lockForUpdate()->first();
+            $product->decreaseStock($order->amount);
+
+            $token = $order->user->profile->device_token;
+
+            if (!$token || $this->runningInTerminal()) {
+                return;
+            }
+
+            $messaging = app(CloudMessagingFb::class);
+            $messaging->setTitle("Seu produto {$order->product->name} foi enviado")
+                ->setBody("Acesse o App para mais informações")
+                ->setTokens([$token])
+                ->setData([
+                    'type' => NotificationType::ORDER_SENT,
+                    'order' => $order->id
+                ])
+                ->send();
         }
     }
 
