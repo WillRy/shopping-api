@@ -2,12 +2,13 @@
 
 namespace CodeShopping\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Cviebrock\EloquentSluggable\Sluggable;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Mnabialek\LaravelEloquentFilter\Traits\Filterable;
 use Illuminate\Http\UploadedFile;
 use PHPUnit\Framework\Error\Error;
+use Illuminate\Database\Eloquent\Model;
+use Cviebrock\EloquentSluggable\Sluggable;
+use CodeShopping\Exceptions\StockException;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Mnabialek\LaravelEloquentFilter\Traits\Filterable;
 
 class Product extends Model
 {
@@ -26,6 +27,21 @@ class Product extends Model
     const BASE_PATH = 'app/public';
     const DIR_PRODUCTS = 'products';
     const PRODUCTS_PATH = self::BASE_PATH . '/' . self::DIR_PRODUCTS;
+
+    public function increaseStock($amount)
+    {
+        $this->stock += $amount;
+        $this->save();
+    }
+
+    public function decreaseStock($amount)
+    {
+        $this->stock -= $amount;
+        if ($this->stock < 0) {
+            throw new StockException("Estoque de {$this->name} não pode ser negativo", StockException::ERROR_NEGATIVE_STOCK);
+        }
+        $this->save();
+    }
 
     public function sluggable(): array
     {

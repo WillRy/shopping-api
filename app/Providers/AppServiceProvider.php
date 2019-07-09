@@ -28,16 +28,11 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
         ProductInput::created(function ($input) {
             $product = $input->product;
-            $product->stock += $input->amount;
-            $product->save();
+            $product->increaseStock($input->amount);
         });
         ProductOutput::created(function ($input) {
             $product = $input->product;
-            $product->stock -= $input->amount;
-            if ($product->stock < 0) {
-                throw new \Exception("Estoque de {$product->name} não pode ser negativo");
-            }
-            $product->save();
+            $product->decreaseStock($input->amount);
         });
 
         ChatGroupInvitation::creating(function ($invitation) {
