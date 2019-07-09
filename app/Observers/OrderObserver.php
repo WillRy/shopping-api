@@ -80,14 +80,6 @@ class OrderObserver
         }
     }
 
-    private function handleIfCancel(Order $order)
-    {
-        if (Order::STATUS_CANCELLED != $order->status) {
-            return;
-        }
-    }
-
-
     private function handleIfSent(Order $order)
     {
         if (Order::STATUS_SENT != $order->status) {
@@ -115,6 +107,20 @@ class OrderObserver
                     'order' => $order->id
                 ])
                 ->send();
+        }
+    }
+
+    private function handleIfCancel(Order $order)
+    {
+        if (Order::STATUS_CANCELLED != $order->status) {
+            return;
+        }
+
+        $oldStatus = $order->getOriginal('status');
+
+        if($oldStatus == Order::STATUS_SENT){
+            $product = $order->product()->lockForUpdate()->first();
+            $product->increaseStock($order->amount);
         }
     }
 
