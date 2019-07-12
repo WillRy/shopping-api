@@ -46,8 +46,8 @@ class ChatGroup extends Model
     public function updateWithPhoto (array $data): ChatGroup
     {
         try {
-            $photo = $data['photo'];
             if (isset($data['photo'])){
+                $photo = $data['photo'];
                 self::uploadPhoto($data['photo']);
                 $this->deletePhoto();
                 $data['photo'] = $data['photo']->hashName();
