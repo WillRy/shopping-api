@@ -4,12 +4,14 @@ namespace CodeShopping\Providers;
 
 use Kreait\Firebase;
 use Kreait\Firebase\Factory;
+use CodeShopping\Models\Order;
 use CodeShopping\Models\Product;
 use Kreait\Firebase\ServiceAccount;
 use CodeShopping\Models\ProductInput;
 use CodeShopping\Models\ProductOutput;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use CodeShopping\Observers\OrderObserver;
 use CodeShopping\Firebase\NotificationType;
 use CodeShopping\Models\ChatInvitationUser;
 use CodeShopping\Models\ChatGroupInvitation;
@@ -26,16 +28,11 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
         ProductInput::created(function ($input) {
             $product = $input->product;
-            $product->stock += $input->amount;
-            $product->save();
+            $product->increaseStock($input->amount);
         });
         ProductOutput::created(function ($input) {
             $product = $input->product;
-            $product->stock -= $input->amount;
-            if ($product->stock < 0) {
-                throw new \Exception("Estoque de {$product->name} não pode ser negativo");
-            }
-            $product->save();
+            $product->decreaseStock($input->amount);
         });
 
         ChatGroupInvitation::creating(function ($invitation) {
@@ -82,6 +79,8 @@ class AppServiceProvider extends ServiceProvider
                 ])
                 ->send();
         });
+
+        Order::observe(OrderObserver::class);
     }
 
     /**

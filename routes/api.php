@@ -42,6 +42,7 @@ Route::group(['namespace' => 'Api', 'as' => 'api.'], function () {
         Route::group(['prefix' => 'open', "namespace" => "Open"], function(){
             Route::resource('products',"ProductController", ['only'=>['index','show']]);
             Route::get('categories',"CategoryController@index");
+            Route::resource('orders',"OrderController", ['except'=>['destroy']]);
         });
 
         Route::group(['middleware' => ['can:is_seller']], function () {
@@ -66,6 +67,8 @@ Route::group(['namespace' => 'Api', 'as' => 'api.'], function () {
             Route::resource('chat_groups.link_invitations','ChatGroupInvitationController', ['except' => ['create', 'edit']]);
 
             Route::resource('chat_groups.invitations','ChatInvitationUserController', ['only' => ['index','show', 'update']]);
+
+            Route::resource('orders','OrderController', ['only' => ['index','show', 'update']]);
         });
     });
 });
