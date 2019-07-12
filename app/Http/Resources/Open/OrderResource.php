@@ -1,7 +1,8 @@
 <?php
 
-namespace CodeShopping\Http\Resources;
+namespace CodeShopping\Http\Resources\Open;
 
+use CodeShopping\Http\Resources\UserResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 

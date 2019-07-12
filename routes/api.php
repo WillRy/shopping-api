@@ -42,6 +42,7 @@ Route::group(['namespace' => 'Api', 'as' => 'api.'], function () {
         Route::group(['prefix' => 'open', "namespace" => "Open"], function(){
             Route::resource('products',"ProductController", ['only'=>['index','show']]);
             Route::get('categories',"CategoryController@index");
+            Route::resource('orders',"OrderController", ['except'=>['destroy']]);
         });
 
         Route::group(['middleware' => ['can:is_seller']], function () {
