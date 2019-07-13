@@ -23,3 +23,12 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::name('customers.web_phone_number_update')->get('customers/phone_number_update/{token}', function($token){
     return view('customer.phone_number_change',compact('token'));
 });
+
+
+Route::get('/app', function(){
+    return view('angular');
+});
+
+Route::get('/app/{angular}', function($angular){
+   return view('angular');
+})->where('angular', '.*');
