@@ -1,0 +1,33 @@
+runtime: php
+env: flex
+
+runtime_config:
+    document_root: public
+
+env_variables:
+    APP_NAME: CodeShopping
+    APP_ENV: prod
+    APP_KEY:
+    APP_DEBUG: false
+    LOG_CHANNEL: errorlog
+    MAIL_DRIVER:
+    MAIL_HOST:
+    MAIL_PORT:
+    MAIL_USERNAME:
+    MAIL_PASSWORD:
+    MAIL_ENCRYPTION: null
+    JWT_SECRET:
+    JWT_BLACKLIST_GRACE_PERIOD: 30
+    FB_SERVER_KEY:
+    MOBILE_PAGE_LINK:
+    MOBILE_ID:
+    CACHE_DRIVER: database
+    SESSION_DRIVER: database
+    DB_HOST: localhost
+    DB_DATABASE: code_shopping
+    DB_USERNAME:
+    DB_PASSWORD:
+    DB_SOCKET: '/cloudsql/codeshopping'
+
+beta_settings:
+    cloud_sql_instances: "codeshopping"
