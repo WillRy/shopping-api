@@ -28,6 +28,10 @@ env_variables:
     DB_USERNAME:
     DB_PASSWORD:
     DB_SOCKET: '/cloudsql/codeshopping'
+    GOOGLE_CLOUD_PROJECT_ID:
+    GOOGLE_CLOUD_KEY_FILE:
+    GOOGLE_CLOUD_STORAGE_BUCKET:
+    GOOGLE_CLOUD_STORAGE_API_URI:
 
 beta_settings:
     cloud_sql_instances: "codeshopping"
