@@ -115,7 +115,8 @@ class ProductPhoto extends Model
     public function getPhotoUrlAttribute()
     {
         $path = self::photosDir($this->product_id);
-        return asset("storage/{$path}/{$this->file_name}");
+        $fileSystemDriver = env('FILESYSTEM_DRIVER', 'local');
+        return $fileSystemDriver == 'local' ? asset("storage/{$path}/{$this->file_name}"): \Storage::disk($fileSystemDriver)->url("{$path}/{$this->file_name}");
     }
 
     public function product()

@@ -137,8 +137,8 @@ class Product extends Model
 
     public function getPhotoUrlAttribute()
     {
-
-        return asset("storage/{$this->photo_url_base}");
+        $fileSystemDriver = env('FILESYSTEM_DRIVER', 'local');
+        return $fileSystemDriver == 'local' ? asset("storage/{$this->photo_url_base}") : \Storage::disk($fileSystemDriver)->url($this->photo_url_base);
     }
 
     public function getPhotoUrlBaseAttribute()
