@@ -14,7 +14,6 @@ class CorsMiddleware
         'http://192.168.15.4:8000',
         'http://localhost:8000',
         'http://localhost',
-        'https://vibrant-ramanujan-b7a4ef.netlify.com'
     ];
     /**
      * Handle an incoming request.
@@ -27,7 +26,7 @@ class CorsMiddleware
     {
         $requestOrigin = $request->headers->get('Origin');
         $allowSpa = env('CORS');
-        if(in_array($requestOrigin,$this->origins) || $this->origins == $allowSpa){
+        if(in_array($requestOrigin,$this->origins) || $requestOrigin == $allowSpa){
             $allowOrigin = $requestOrigin;
         }
         if ($request->is('api/*')) {
