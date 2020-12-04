@@ -1,65 +1,347 @@
-<p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
+# Chat comercial
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+A Aplicação consiste em um chat para a área de vendas, onde o objetivo é que as empresas possam interagir em tempo real com os clientes ou futuros clientes, através de um chat similar ao telegram.
 
-## About Laravel
+A solução também inclui um painel web, para que a empresa possa gerenciar/receber os pedidos vindos do aplicativo, criar seus grupos de chat, gerir usuários, produtos a venda e encomendas.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as:
+O Aplicativo mobile, é focado para os clientes, onde poderão entrar em um grupo, tendo a possibilidade de interagir em tempo real no chat, utilizando textos, imagens e audio. Também terão acesso a abas de produtos onde poderão fazer os pedidos.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-Laravel is accessible, yet powerful, providing tools needed for large, robust applications.
 
-## Learning Laravel
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of any modern web application framework, making it a breeze to get started learning the framework.
 
-If you're not in the mood to read, [Laracasts](https://laracasts.com) contains over 1100 video tutorials on a range of topics including Laravel, modern PHP, unit testing, JavaScript, and more. Boost the skill level of yourself and your entire team by digging into our comprehensive video library.
+## 1 - Estrutura da aplicação e tecnologias
 
-## Laravel Sponsors
+**Painel web:**
 
-We would like to extend our thanks to the following sponsors for helping fund on-going Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell):
+https://github.com/WillRy/shopping-spa
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
+Construído no modelo de SPA (SPA: Single Page Application), utilizando o angular 6.
 
-## Contributing
+**App:**
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+https://github.com/WillRy/shopping-mobile
 
-## Security Vulnerabilities
+Construído utilizando Ionic 3
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**API:**
 
-## License
+https://github.com/WillRy/shopping-api
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Construída utilizando o Laravel Framework.
+
+**Banco de dados:**
+
+É utilizado o **mysql** para persistência dos dados e o **Firebase Realtime Database** para a construção do chat.
+
+**As tecnologias foram usadas nas versões:**
+
+* Laravel@5.6
+* Angular@6.2.9
+* Ionic@3.20.0
+* Cordova@9.0.0
+* Firebase
+* MySQL
+
+
+
+
+
+## 2 - Funcionamento da aplicação - Aplicativo mobile
+
+O Aplicativo mobile construído em Ionic, contém as seguintes funcionalidades:
+
+* Cadastro com número de telefone
+* Troca de número de telefone
+* Área de chats
+* Área de produtos
+* Área de pedidos
+
+<div style="page-break-after: always;"></div>
+
+### 2.1 - Criação de usuários
+
+Logo ao entrar no aplicativo, o usuário se depara com as seguintes opções:
+
+![](./midias/mobile/01-start.png)
+
+<div style="page-break-after: always;"></div>
+
+Na criação de usuários, o usuário pode criar a sua conta utilizando o número de telefone, **que será validado utilizando os serviços do Firebase.** 
+
+![](./midias/mobile/02-number_verify.png)
+
+Após confirmar o número de telefone, caso já tenha registro na base de dados, será direcionado para a tela principal do aplicativo, onde terão 3 abas: Grupos, produtos e pedidos.
+
+**Caso não tenha cadastro, será enviado para a tela de cadastro.**
+
+<div style="page-break-after: always;"></div>
+
+### 2.2 - Grupos e chat
+
+#### 2.2.1 - Aba de grupos
+
+Nesta aba, é possível visualizar os grupos do qual você faz parte, sendo possível enviar textos, gravar mensagem de áudio e enviar imagens no chat.
+
+![](./midias/mobile/03-groups.png)
+
+<div style="page-break-after: always;"></div>
+
+#### 2.2.2 - Sala de chat
+
+![](./midias/mobile/04-chat.png)
+
+
+<div style="page-break-after: always;"></div>
+
+### 2.3 - Produtos
+
+#### 2.3.1 - Aba de produtos
+
+Nesta aba, há uma lista de produtos disponíveis para serem encomendados
+
+![](./midias/mobile/05-products.png)
+
+<div style="page-break-after: always;"></div>
+
+#### 2.3.2 - Detalhes do produto
+
+![](./midias/mobile/06-product-detail.png)
+
+
+<div style="page-break-after: always;"></div>
+
+### 2.4 - Pedidos
+
+#### 2.4.1 - Aba de pedidos
+
+![](./midias/mobile/08-order-list.png)
+
+
+
+
+<div style="page-break-after: always;"></div>
+
+#### 2.4.2 - Detalhes do pedido
+
+![](./midias/mobile/07-order-detail.png)
+
+
+<div style="page-break-after: always;"></div>
+
+## 3 - Ingresso em grupos
+
+Os vendedores, através do painel administrativo, podem adicionar uma pessoa em um grupo de chat ou podem gerar links de convite, onde ao acessar o link, o aplicativo será aberto e será feito a solicitação de entrada no grupo.
+
+## 4 - Notificações
+
+A Aplicação conta com uma integração ao Firebase Cloud Messaging, que permite direcionar push notifications para os usuários, toda nova mensagem ou aprovação na solicitação de entrada em grupo, o usuário irá receber a notificações para alertar das mudanças.
+
+
+<div style="page-break-after: always;"></div>
+
+## 5 -  Funcionamento da aplicação - Painel Administrativo
+
+O Painel foi construído utilizando o Angular, devido a seu ótimo ambiente para construções de SPAs, com lazy loading, code splitting e entre outros recursos.
+
+Este painel só é acessível para os vendedores e administradores do sistema, pois possui funcionalidades administrativas, como:
+
+* Categoria
+* Produto
+* Usuário
+* Entradas
+* Saidas
+* Chats
+* Pedidos
+
+
+### 5.1 - Categorias
+
+Listagem de categorias de produtos, podendo editar e remover
+
+![](./midias/administracao/categorias/listagem.JPG)
+
+<div style="page-break-after: always;"></div>
+
+### 5.2 - Produtos
+
+Listagem de produtos, onde é possível criar/editar e remover. Também é possível adicionar categorias a um produto ou fotos.
+
+![](./midias/administracao/produtos/listagem.JPG)
+
+
+
+![](./midias/administracao/produtos/fotos.JPG)
+
+
+
+![](./midias/administracao/produtos/foto-galeria.JPG)
+
+
+<div style="page-break-after: always;"></div>
+
+### 5.3 - Entrada/Saida
+
+Módulo onde é possível registrar a entrada e saída de produtos contidos no estoque
+
+![](./midias/administracao/entradas/entradas.JPG)
+
+
+
+![](./midias/administracao/saidas/saidas.JPG)
+
+<div style="page-break-after: always;"></div>
+
+### 5.4 - Chats
+
+Módulo onde é possível administrar os chats do sistema, sendo possível criar novas salas, administrar membros e criar links de convites
+
+![](./midias/administracao/chats/listagem.JPG)
+
+
+
+
+![](./midias/administracao/chats/membros.JPG)
+
+
+
+![](./midias/administracao/chats/convites.JPG)
+
+
+
+
+
+## 6 - Como executar?
+
+Para executar a aplicação, é necessário:
+
+### 6.1 -  Firebase
+
+É necessário criar um projeto no firebase, registrando uma versão para: 
+
+**web** e **mobile**
+
+Após registrar o projeto, é necessário, criar um arquivo de config do firebase para a SPA(**web**), um para a **API** e outro arquivo para o **mobile**
+
+**Para a API:**
+
+* Gerar uma chave admin-sdk (service account)
+* Inserir o arquivo .json gerado, na raiz da API
+
+O arquivo de admin-sdk, assemelha-se  a este formato:
+
+```json
+{
+    "type": "service_account",
+    "project_id": "",
+    "private_key_id": "",
+    "private_key": "",
+    "client_email": "",
+    "client_id": "",
+    "auth_uri": "",
+    "token_uri": "",
+    "auth_provider_x509_cert_url": "",
+    "client_x509_cert_url": ""
+  }
+
+
+```
+
+
+
+
+
+### 6.2 - Web
+
+* Gerar o arquivo de autenticação
+* Criar um arquivo chamado **firebase-config.ts** na raiz do projeto, no seguinte modelo:
+
+```typescript
+export default {
+  apiKey: '',
+  authDomain: '',
+  databaseURL: '',
+  projectId: '',
+  storageBucket: '',
+  messagingSenderId: '',
+  appId: ''
+};
+
+```
+> Preencher os dados, com os valores presentes, na config gerada no firebase
+
+
+
+
+
+### 6.3 - Mobile
+
+O Aplicativo requrer a instalação das dependências comuns para a execução do **Ionic3**
+
+* Gerar o arquivo **google-services.json**
+* Inserir este arquivo na pasta **<raiz do projeto>/platforms/android/app**
+
+#### 6.3.1 - Primeiramente, clone o painel web
+
+```shell
+git clone https://github.com/WillRy/shopping-spa
+```
+
+#### 6.3.2 - Baixe as dependências
+
+```shell
+npm install
+```
+
+#### 6.3.3 - Execute o servidor
+
+```she
+ng serve
+```
+
+#### 6.3.4 - Acesse o painel
+
+http://localhost:4200
+
+
+
+
+
+### 6.4 - API
+
+Os endpoints disponíveis da API estão no arquivo: **Insomnia-endpoints.json**
+
+
+
+#### 6.4.1 - Primeiramente, clone a API:
+
+```shell
+git clone https://github.com/WillRy/shopping-api
+```
+
+#### 6.4.2 - Baixe as dependências
+
+```shell
+composer install
+```
+
+#### 6.4.3 - Rode as migrations e seed
+
+```shell
+php artisan migrate 
+
+php artisan db:seed
+```
+
+#### 6.4.4 - Execute o servidor
+
+```shell
+php artisan serve
+```
+
+
+
+
+
+
+
